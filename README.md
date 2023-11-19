@@ -1,39 +1,84 @@
-# Predicting MPG Using Linear Regression Algorithm
-# Introduction
-In this project, we will explore how to predict a car's miles per gallon (MPG) using a Linear Regression algorithm. The dataset used for this project contains information about various car attributes like the number of cylinders, displacement, horsepower, weight, acceleration, model year, and origin. We aim to build a model that can accurately predict a car's MPG based on these attributes.
+## Predicting MPG using Linear Regression Algorithm
 
-# Summary of Steps
-Here's an overview of the steps we've followed in this project:
+### Introduction
 
-1. Import Libraries
-We start by importing the necessary Python libraries for data analysis and modeling. These libraries include NumPy, Pandas, Seaborn, Matplotlib, and scikit-learn's LinearRegression model. We also enable inline plotting for Matplotlib and suppress warnings.
+The goal of this analysis is to predict the Miles Per Gallon (MPG) of cars using the Linear Regression algorithm. The dataset used for this analysis contains various attributes such as cylinders, displacement, horsepower, weight, acceleration, model year, origin, and car name. The steps involved in the analysis include data loading and review, handling missing values, feature engineering, creating dummy variables, data visualization, splitting the dataset, training the model, and evaluating its performance.
 
-2. Load and Review Data
-We load the dataset from a CSV file named 'auto-mpg.csv' and display the first 10 rows to get a glimpse of the data. The dataset contains information about 398 cars and their attributes.
+### Steps
 
-3. Create Dummy Variables
-We convert the 'origin' column, which represents the car's country of origin, into dummy variables using one-hot encoding. This helps us include this categorical variable in our regression model.
+#### 1. Importing Libraries
 
-4. Feature Engineering
-We drop the 'car name' column as it's not used for predicting MPG. Additionally, we handle missing values in the 'horsepower' column by replacing them with the median value. We also convert the 'horsepower' column to a numeric data type.
+```python
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+%matplotlib inline
+import warnings
+warnings.filterwarnings('ignore')
+```
 
-5. Creating Dummy Variables
-We create dummy variables for the 'origin' column using one-hot encoding, which converts the categorical variable into numerical format.
+#### 2. Loading and Reviewing Data
 
-6. Visualization
-We generate bivariate plots to visualize the relationships between different attributes and the target variable (MPG). These plots help us understand the data's distribution and correlations.
+```python
+cData = pd.read_csv('auto-mpg.csv')
+cData.head(10)
+```
 
-7. Splitting the Model
-We split the dataset into training and testing sets, with 70% of the data used for training the model and 30% for testing its performance.
+#### 3. Creating Dummy Variables
 
-8. Training the Model
-We use scikit-learn's LinearRegression model to train our prediction model on the training data. We calculate the coefficients and intercept to understand the linear relationship between the independent variables and MPG.
+```python
+cData['origin'] = cData['origin'].replace({1:'america',2:'europe',3:'japan'})
+cData = pd.get_dummies(cData, ['origin'])
+```
 
-9. Model Evaluation
-We evaluate the model's performance by calculating the R-squared score on both the training and testing data. The R-squared score measures the proportion of the variance in the dependent variable (MPG) that is predictable from the independent variables.
+#### 4. Handling Missing Values
 
-# Sources
-The dataset used in this project, 'auto-mpg.csv,' is a common dataset available for educational purposes and can be found in various online resources and data science platforms.
+```python
+cData = cData.replace({'?':np.nan})
+cData['horsepower'] = cData['horsepower'].replace(np.nan, cData['horsepower'].median())
+```
 
-# Conclusion
-In this project, we successfully built a Linear Regression model to predict a car's MPG based on its attributes. The model achieved an R-squared score of approximately 81.41% on the training data and 84.33% on the testing data, indicating that it provides reasonably accurate predictions for MPG. This predictive model can be useful for various applications, such as assessing a car's fuel efficiency or making informed decisions about vehicle design and manufacturing.
+#### 5. Feature Engineering
+
+```python
+cData = cData.drop('car name', axis=1)
+```
+
+#### 6. Data Visualization
+
+```python
+cData_attribute = cData.iloc[:, 0:7]
+sns.pairplot(cData_attribute, diag_kind='kde')
+```
+
+#### 7. Splitting the Model
+
+```python
+y = cData['mpg']
+x = cData.drop('mpg', axis=1)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)
+```
+
+#### 8. Training the Model
+
+```python
+model = LinearRegression()
+model.fit(x_train, y_train)
+```
+
+#### 9. Model Evaluation
+
+```python
+model.score(x_test, y_test) * 100
+```
+
+### Source
+
+The dataset used in this analysis is sourced from the 'auto-mpg' dataset, which is commonly used in machine learning and data science tutorials. The dataset contains information about various car models and their specifications.
+
+### Conclusion
+
+The Linear Regression model achieved a certain accuracy percentage in predicting the MPG of cars based on the given features. This analysis demonstrated the typical steps involved in a data analysis project, including data preprocessing, feature engineering, model training, and evaluation. The predictive model can be further fine-tuned or replaced with more complex models for improved accuracy, depending on the specific requirements of the application.
